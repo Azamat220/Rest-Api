@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
+
+from . import swagger
 from shop_api import settings
-from product.views import (products_list_api_view, product_retrieve_api_view,
+from product.views import (products_list_api_view, product_retrieve_api_view, products_reviews_api_view,
 reviews_list_api_view, review_retrieve_api_view, categoris_list_api_view, category_retrieve_api_view)
 
 urlpatterns = [
@@ -29,7 +31,9 @@ urlpatterns = [
     path('api/v1/categoris/<int:id>/', category_retrieve_api_view),
     path('api/v1/reviews/', reviews_list_api_view),
     path('api/v1/reviews/<int:id>/', review_retrieve_api_view),
+    path('api/v1/products/reviews/', products_reviews_api_view)
 
 ]
 
+urlpatterns += swagger.urlpatterns
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
