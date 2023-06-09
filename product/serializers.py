@@ -46,3 +46,19 @@ class ProductReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = 'id title reviews rating reviews'.split()
+
+class ProductValidateSarializer(serializers.Serializer):
+    category_id = serializers.IntegerField(required=False)
+    title = serializers.CharField(max_length=100)
+    description = serializers.CharField(max_length=250)
+    price = serializers.FloatField(max_value=1000)
+
+
+class CategoryValidateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=50)
+
+
+class ReviewValidateSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField(max_value=100)
+    text = serializers.CharField(max_length=220)
+    stars = serializers.IntegerField(min_value=1, max_value=5)

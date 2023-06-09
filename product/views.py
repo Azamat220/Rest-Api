@@ -3,20 +3,26 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from product.models import Product, Category, Review
 from product.serializers import (ProductSerializer, CategorySerializer, ReviewSerializer,
-                                 ProductRetrievSerializer, CategoryRetrievSerializer, ReviewRetrievSerializer,
-                                 ProductReviewSerializer)
-
+                                ProductRetrievSerializer, CategoryRetrievSerializer, ReviewRetrievSerializer,
+                                 ProductReviewSerializer, ProductValidateSarializer, CategoryValidateSerializer,
+                                 ReviewValidateSerializer)
 
 @api_view(['GET', 'POST'])
 def products_list_api_view(request):
     if request.method == 'GET':
         product = Product.objects.all()
-
         data = ProductSerializer(product, many=True).data
-
         return Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
+
+        """ Validation of data"""
+        serializer = ProductValidateSarializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=serializer.errors)
+
+        """Step 2: Create object (Operation)"""
         data = request.data
         product = Product.objects.create(
             category_id=data.get('category_id'),
@@ -25,6 +31,7 @@ def products_list_api_view(request):
             price=data.get('price')
         )
 
+        """Step 3: Return response"""
         return Response(data=ProductSerializer(product, many=False).data, status=status.HTTP_201_CREATED)
 
 
@@ -34,12 +41,15 @@ def product_retrieve_api_view(request, **kwargs):
 
     if request.method == 'GET':
         product = Product.objects.get(id=kwargs['id'])
-
         data = ProductRetrievSerializer(product, many=False).data
-
         return Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
+        serializer = ProductValidateSarializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=serializer.errors)
+
         data = request.data
 
         product.category_id = data.get('category_id')
@@ -59,12 +69,15 @@ def product_retrieve_api_view(request, **kwargs):
 def categoris_list_api_view(request):
     if request.method == 'GET':
         categoris = Category.objects.all()
-
         data = CategorySerializer(categoris, many=True).data
-
         return Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
+        serializer = CategoryValidateSerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=serializer.errors)
+
         data = request.data
         categoris = Category.objects.create(
             name=data.get('name')
@@ -78,16 +91,17 @@ def category_retrieve_api_view(request, **kwargs):
     category = Category.objects.get(id=kwargs['id'])
     if request.method == 'GET':
         category = Category.objects.get(id=kwargs['id'])
-
         data = CategoryRetrievSerializer(category, many=False).data
-
         return Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
+        serializer = CategoryValidateSerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=serializer.errors)
+
         data = request.data
-
         category.name = data.get('name')
-
         category.save()
         return Response(data=CategoryRetrievSerializer(category, many=False).data,
                         status=status.HTTP_200_OK)
@@ -100,12 +114,15 @@ def category_retrieve_api_view(request, **kwargs):
 def reviews_list_api_view(request):
     if request.method == 'GET':
         reviews = Review.objects.all()
-
         data = ReviewSerializer(reviews, many=True).data
-
         return Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
+        serializer = ReviewValidateSerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=serializer.errors)
+
         data = request.data
         reviews = Review.objects.create(
             product_id=data.get('product_id'),
@@ -121,12 +138,14 @@ def review_retrieve_api_view(request, **kwargs):
     review = Review.objects.get(id=kwargs['id'])
     if request.method == 'GET':
         review = Review.objects.get(id=kwargs['id'])
-
         data = ReviewRetrievSerializer(review, many=False).data
-
         return Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
+        serializer = ReviewValidateSerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=serializer.errors)
         data = request.data
 
         review.product_id = data.get('product_id')
