@@ -6,11 +6,10 @@ from django.db.models import CASCADE
 class Category(models.Model):
     name = models.CharField(max_length=50)
 
-
 class Product(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    price = models.FloatField(default=0)
+    price = models.FloatField(null=True)
     category = models.ForeignKey(Category, on_delete=CASCADE, null=True, related_name='products')
 
     @property
@@ -33,6 +32,6 @@ STAR_CHOICES = (
 
 class Review(models.Model):
     text = models.TextField()
-    product = models.ForeignKey(Product, on_delete=CASCADE, related_name='reviews')
+    product = models.ForeignKey(Product, on_delete=CASCADE, null=True, related_name='reviews')
     stars = models.IntegerField(default=5, choices=STAR_CHOICES)
 
