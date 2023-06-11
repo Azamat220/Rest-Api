@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'product'
 ]
 
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 3
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
